@@ -71,9 +71,6 @@ class appicon:
 				screen.blit(icontext,(self.rect.x+self.rect.w/2-icontext.get_rect().w/2,self.rect.y+self.rect.h+6))
 				
 			return
-							
-		
-		
 		
 	
 class fenster:
@@ -87,6 +84,8 @@ class fenster:
 		self.savefensterrect.h = self.fensterrect.h						
 		self.outfensterrect = pygame.Rect(self.fensterrect.x-4,self.fensterrect.y-22,self.fensterrect.w+21,self.fensterrect.h+25)
 		self.fenstername = fenstername
+		self.aktiv = True
+		self.farbe = (0,0,0)
 		self.hinweistext = []
 		self.icons = []
 		self.verschieben = False
@@ -99,10 +98,15 @@ class fenster:
 		self.fenstercancelrect = (0,0,0,0)	
 
 	def ausgabe(self, screen):
+		if self.aktiv:
+			self.farbe = (102,136,187)
+		else:
+			self.farbe = (170,170,170)		
+
 		pygame.draw.rect(screen, (170, 170, 170), self.fensterrect, 0)	
 		
 		# Top	
-		pygame.draw.rect(screen, (102,136,187), (self.fensterrect.x-4,self.fensterrect.y-20,self.fensterrect.w+22,18), 0)			
+		pygame.draw.rect(screen, self.farbe, (self.fensterrect.x-4,self.fensterrect.y-20,self.fensterrect.w+22,18), 0)			
 		pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x-3,self.fensterrect.y-2,self.fensterrect.w+21,2), 0)			
 		pygame.draw.rect(screen, (255,255,255), (self.fensterrect.x-4,self.fensterrect.y-22,self.fensterrect.w+22,2), 0)
 		pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x-3,self.fensterrect.y-2,self.fensterrect.w+21,2), 0)			
@@ -115,7 +119,7 @@ class fenster:
 			pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x+3,self.fensterrect.y-15,7,9), 0)			
 			pygame.draw.rect(screen, (255,255,255), (self.fensterrect.x+5,self.fensterrect.y-13,3,5), 0)					
 			pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x+self.fensterrect.w-27,self.fensterrect.y-18,15,14), 0)			
-			pygame.draw.rect(screen, (102,136,187), (self.fensterrect.x+self.fensterrect.w-26,self.fensterrect.y-16,13,10), 0)			
+			pygame.draw.rect(screen, self.farbe, (self.fensterrect.x+self.fensterrect.w-26,self.fensterrect.y-16,13,10), 0)			
 			pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x+self.fensterrect.w-27,self.fensterrect.y-17,8,7), 0)			
 			pygame.draw.rect(screen, (255,255,255), (self.fensterrect.x+self.fensterrect.w-25,self.fensterrect.y-16,4,4), 0)			
 			self.fenstercloserect = (self.fensterrect.x-2,self.fensterrect.y-20,18,18)	
@@ -132,7 +136,7 @@ class fenster:
 		self.fensterfrontrect = (self.fensterrect.x+self.fensterrect.w-7,self.fensterrect.y-20,23,18)	
 
 		# Left
-		pygame.draw.rect(screen, (102,136,187), (self.fensterrect.x-3,self.fensterrect.y,3,self.fensterrect.h+2), 0)			
+		pygame.draw.rect(screen, self.farbe, (self.fensterrect.x-3,self.fensterrect.y,3,self.fensterrect.h+2), 0)			
 		pygame.draw.rect(screen, (255,255,255), (self.fensterrect.x-4,self.fensterrect.y-22,1,self.fensterrect.h+24), 0)			
 		pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x-1,self.fensterrect.y,1,self.fensterrect.h), 0)			
 
@@ -142,12 +146,12 @@ class fenster:
 							
 		# Right
 		if self.typ == "hinweis" or self.typ == "janein":
-			pygame.draw.rect(screen, (102,136,187), (self.fensterrect.x+self.fensterrect.w+15,self.fensterrect.y,2,self.fensterrect.h+2), 0)			
+			pygame.draw.rect(screen, self.farbe, (self.fensterrect.x+self.fensterrect.w+15,self.fensterrect.y,2,self.fensterrect.h+2), 0)			
 			pygame.draw.rect(screen, (255,255,255), (self.fensterrect.x+14+self.fensterrect.w,self.fensterrect.y,1,self.fensterrect.h+2), 0)			
 			pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x+self.fensterrect.w+17,self.fensterrect.y-20,1,self.fensterrect.h+24), 0)			
 
 		else:
-			pygame.draw.rect(screen, (102,136,187), (self.fensterrect.x+self.fensterrect.w+1,self.fensterrect.y,16,self.fensterrect.h+2), 0)			
+			pygame.draw.rect(screen, self.farbe, (self.fensterrect.x+self.fensterrect.w+1,self.fensterrect.y,16,self.fensterrect.h+2), 0)			
 			pygame.draw.rect(screen, (255,255,255), (self.fensterrect.x+self.fensterrect.w,self.fensterrect.y,1,self.fensterrect.h+2), 0)			
 			pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x+self.fensterrect.w+17,self.fensterrect.y-20,1,self.fensterrect.h+24), 0)			
 			pygame.draw.rect(screen, (255,255,255), (self.fensterrect.x+self.fensterrect.w,self.fensterrect.y+self.fensterrect.h-15,17,2), 0)			
@@ -155,8 +159,8 @@ class fenster:
 			pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x+self.fensterrect.w+4,self.fensterrect.y+self.fensterrect.h-10,10,10), 0)			
 			pygame.draw.rect(screen, (255,255,255), (self.fensterrect.x+self.fensterrect.w+5,self.fensterrect.y+self.fensterrect.h-9,8,7), 0)			
 			pygame.draw.line(screen, (0,0,0), [self.fensterrect.x+self.fensterrect.w+4, self.fensterrect.y+self.fensterrect.h-2], [self.fensterrect.x+self.fensterrect.w+12, self.fensterrect.y+self.fensterrect.h-10], 2)
-			pygame.draw.line(screen, (102,136,187), [self.fensterrect.x+self.fensterrect.w+3, self.fensterrect.y+self.fensterrect.h-3], [self.fensterrect.x+self.fensterrect.w+12, self.fensterrect.y+self.fensterrect.h-12], 4)
-			pygame.draw.rect(screen, (102,136,187), (self.fensterrect.x+self.fensterrect.w+4,self.fensterrect.y+self.fensterrect.h-10,5,5), 0)			
+			pygame.draw.line(screen, self.farbe, [self.fensterrect.x+self.fensterrect.w+3, self.fensterrect.y+self.fensterrect.h-3], [self.fensterrect.x+self.fensterrect.w+12, self.fensterrect.y+self.fensterrect.h-12], 4)
+			pygame.draw.rect(screen, self.farbe, (self.fensterrect.x+self.fensterrect.w+4,self.fensterrect.y+self.fensterrect.h-10,5,5), 0)			
 
 
 		tmptext = self.fenstername
@@ -238,6 +242,8 @@ class fenster:
 	def toprect(self):
 		return(self.fenstertoprect)
 
+	def outrect(self):
+		return(self.outfensterrect)
 	
 def main():
 
@@ -359,6 +365,7 @@ def main():
 	aktivshell = False
 
 	aktivfenster = []
+	
 	fensterlastpos = (0,0)
 	
 	running = True
@@ -466,59 +473,60 @@ def main():
 					befehl = wbicon.befehl	
 					leftdoppelclick = False	
 
-
-			
 #		Fenster anzeigen
 
-		for afenster in aktivfenster:
-			afenster.ausgabe(screen)
-			if leftclick:
-				if pygame.Rect(afenster.closerect()).collidepoint(leftclickpos):
-					aktivfenster.remove(afenster)
-					leftclick=False				
-				elif pygame.Rect(afenster.okrect()).collidepoint(leftclickpos):
-					if afenster.typ=="janein":
-						running=False
-					aktivfenster.remove(afenster)
-					leftclick=False				
-				elif pygame.Rect(afenster.cancelrect()).collidepoint(leftclickpos):
-					aktivfenster.remove(afenster)				
-					leftclick=False				
-				elif pygame.Rect(afenster.vollrect()).collidepoint(leftclickpos):
-					if afenster.fensterrect==afenster.savefensterrect:
-						afenster.savefensterrect.x = afenster.fensterrect.x
-						afenster.savefensterrect.y = afenster.fensterrect.y
-						afenster.savefensterrect.w = afenster.fensterrect.w
-						afenster.savefensterrect.h = afenster.fensterrect.h						
-						afenster.fensterrect.x = 4
-						afenster.fensterrect.y = 44
-						afenster.fensterrect.w = width-22
-						afenster.fensterrect.h = height-64
+		if len(aktivfenster)>0:
+			for afenster in aktivfenster:
+				afenster.ausgabe(screen)
+				if leftclick:
+					if pygame.Rect(afenster.outrect()).collidepoint(leftclickpos) or afenster.verschieben:
+							afenster.aktiv=True	
+							fensteraktiv = afenster						
 					else:
-						afenster.fensterrect.x = afenster.savefensterrect.x
-						afenster.fensterrect.y = afenster.savefensterrect.y
-						afenster.fensterrect.w = afenster.savefensterrect.w
-						afenster.fensterrect.h = afenster.savefensterrect.h						
-					leftclick=False				
-				elif pygame.Rect(afenster.frontrect()).collidepoint(leftclickpos):
-					print("To Front")
-					leftclick=False				
-				elif pygame.Rect(afenster.toprect()).collidepoint(leftclickpos):
-					afenster.verschieben=True
-					afenster.outfensterrect.x = mousepos[0]-leftclickpos[0]+afenster.fensterrect.x-4
-					afenster.outfensterrect.y = mousepos[1]-leftclickpos[1]+afenster.fensterrect.y-22
-			else:
-				if afenster.verschieben:					
-					afenster.fensterrect.x = afenster.outfensterrect.x+4
-					afenster.fensterrect.y = afenster.outfensterrect.y+22
-					afenster.verschieben=False
-					leftclick=False				
+							afenster.aktiv=False
+					if afenster.aktiv:
+						if pygame.Rect(afenster.closerect()).collidepoint(leftclickpos):
+							aktivfenster.remove(afenster)
+							leftclick=False				
+						elif pygame.Rect(afenster.okrect()).collidepoint(leftclickpos):
+							if afenster.typ=="janein":
+								running=False
+							aktivfenster.remove(afenster)
+							leftclick=False				
+						elif pygame.Rect(afenster.cancelrect()).collidepoint(leftclickpos):
+							aktivfenster.remove(afenster)				
+							leftclick=False				
+						elif pygame.Rect(afenster.vollrect()).collidepoint(leftclickpos):
+							if afenster.fensterrect==afenster.savefensterrect:
+								afenster.savefensterrect.x = afenster.fensterrect.x
+								afenster.savefensterrect.y = afenster.fensterrect.y
+								afenster.savefensterrect.w = afenster.fensterrect.w
+								afenster.savefensterrect.h = afenster.fensterrect.h						
+								afenster.fensterrect.x = 4
+								afenster.fensterrect.y = 44
+								afenster.fensterrect.w = width-22
+								afenster.fensterrect.h = height-64
+							else:
+								afenster.fensterrect.x = afenster.savefensterrect.x
+								afenster.fensterrect.y = afenster.savefensterrect.y
+								afenster.fensterrect.w = afenster.savefensterrect.w
+								afenster.fensterrect.h = afenster.savefensterrect.h						
+							leftclick=False				
+						elif pygame.Rect(afenster.frontrect()).collidepoint(leftclickpos):
+							print("To Front")
+							leftclick=False				
+						elif pygame.Rect(afenster.toprect()).collidepoint(leftclickpos):
+							afenster.verschieben=True
+							afenster.outfensterrect.x = mousepos[0]-leftclickpos[0]+afenster.fensterrect.x-4
+							afenster.outfensterrect.y = mousepos[1]-leftclickpos[1]+afenster.fensterrect.y-22
+								
+				else:
+					if afenster.verschieben:					
+						afenster.fensterrect.x = afenster.outfensterrect.x+4
+						afenster.fensterrect.y = afenster.outfensterrect.y+22
+						afenster.verschieben=False
+						leftclick=False				
 					
-			
-
-
-
-			
 			
 #		Menue anzeige
 
