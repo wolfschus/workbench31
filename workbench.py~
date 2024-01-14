@@ -667,7 +667,7 @@ def main():
 			elif befehl=="Letzte Meldung anzeigen":
 				menuemode=0
 			elif befehl=="starte:Shell":
-				aktivfenster.append(fenster("shell","AmigaShell",pygame.Rect(4,120,width-22,280)))
+				aktivfenster.append(fenster("shell","AmigaShell",pygame.Rect(4,120,width-22,300)))
 			elif befehl=="Version Copyright":
 				aktivfenster.append(fenster("hinweis","Version",pygame.Rect(10,50,200,160)))
 				aktivfenster[len(aktivfenster)-1].hinweistext = ["Amigang Workbench 3.1"]
