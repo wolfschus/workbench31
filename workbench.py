@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # AmigaNG Workbench 3.1
-# Version 0.2
+# Version 0.3
 # (c) 2014 - 2024
 # by Wolfgang Schuster
 
@@ -97,7 +97,7 @@ class fenster:
 		self.fensterokrect = (0,0,0,0)	
 		self.fenstercancelrect = (0,0,0,0)	
 
-	def ausgabe(self, screen):
+	def ausgabe(self, screen, font):
 		if self.aktiv:
 			self.farbe = (102,136,187)
 		else:
@@ -159,6 +159,9 @@ class fenster:
 			pygame.draw.line(screen, self.farbe, [self.fensterrect.x+self.fensterrect.w+3, self.fensterrect.y+self.fensterrect.h-3], [self.fensterrect.x+self.fensterrect.w+12, self.fensterrect.y+self.fensterrect.h-12], 4)
 			pygame.draw.rect(screen, self.farbe, (self.fensterrect.x+self.fensterrect.w+4,self.fensterrect.y+self.fensterrect.h-10,5,5), 0)			
 
+		for icon in self.icons:
+			icon.ausgabe(screen, font)
+				
 
 		tmptext = self.fenstername
 		fenstertext = font.render(tmptext, True, (0, 0, 0))
@@ -231,6 +234,9 @@ class fenster:
 		self.fenstersizerect = (self.fensterrect.x+self.fensterrect.w,self.fensterrect.y+self.fensterrect.h-14,17,15)	
 		self.fenstertoprect = (self.fensterrect.x+18,self.fensterrect.y-20,self.fensterrect.w-51,18)	
 		self.fensterfrontrect = (self.fensterrect.x+self.fensterrect.w-7,self.fensterrect.y-20,23,18)	
+		
+		for icon in self.icons:
+			print(icon.pos[0] + self.fensterrect.x)
 
 	def updateout(self):
 		self.outfensterrect = pygame.Rect(self.fensterrect.x-4,self.fensterrect.y-22,self.fensterrect.w+21,self.fensterrect.h+25)
@@ -319,7 +325,7 @@ def main():
 	wbicons = []
 	wbicons.append(appicon(screen,"Ram Disk" ,"ramdisk", (40,30), "dir:/home/wolf"))
 	wbicons.append(appicon(screen,"DH0" ,"hd", (20,100), "dir:/home/wolf/dh0"))
-	wbicons.append(appicon(screen,"DH1" ,"hd", (20,170), "dir:/home/wolf/dh0"))
+	wbicons.append(appicon(screen,"DH1" ,"hd", (20,170), "dir:/home/wolf/dh1"))
 	wbicons.append(appicon(screen,"Shell" ,"cli", (30,240), "starte:Shell"))
 		
 	#Menue Images
@@ -330,7 +336,7 @@ def main():
 	menue.append(["Fenster", "menue", "", "", pygame.Rect(0,0,0,0), 0, 0, True])
 	menue.append(["Piktogramm", "menue", "", "", pygame.Rect(0,0,0,0), 0, 0, True])
 	menue.append(["Hilfsmittel", "menue", "", "", pygame.Rect(0,0,0,0), 0, 0, True])
-	menue.append(["* Workbench als Hintergrund", "submenue", "Workbench", "Workbench als Hintergrun", pygame.Rect(0,0,0,0), 0, 0, True])
+	menue.append(["  Workbench als Hintergrund", "submenue", "Workbench", "Workbench als Hintergrund", pygame.Rect(0,0,0,0), 0, 0, True])
 	menue.append(["Befehl ausführen ...", "submenue", "Workbench", "Befehl ausführen", pygame.Rect(0,0,0,0), 0, 0, True])
 	menue.append(["Bild neu aufbauen", "submenue", "Workbench", "Bild neu aufbauen", pygame.Rect(0,0,0,0), 0, 0, True])
 	menue.append(["Alles aktualisieren", "submenue", "Workbench", "Alles aktualisieren", pygame.Rect(0,0,0,0), 0, 0, True])
@@ -411,6 +417,12 @@ def main():
 	
 	fensterlastpos = (0,0)
 	
+	workbenchfenster = False
+	
+	if workbenchfenster==True:	
+		aktivfenster.append(fenster("workbench","Workbench",pygame.Rect(4,44,width-22,height-64)))
+		aktivfenster[0].icons = wbicons
+		
 	running = True
 	while running:
 
@@ -449,7 +461,7 @@ def main():
 					elif aktivuntermenue>0:
 						if menue[aktivuntermenue-1][2]==menue[aktivmenue-1][0]:
 							befehl = menue[aktivuntermenue-1][3]
-					print(aktivmenue,aktivuntermenue,aktivsubuntermenue)
+					print(aktivmenue,aktivuntermenue,aktivsubuntermenue,befehl)
 					
 				if event.button==1:
 					menuemode=1
@@ -502,25 +514,25 @@ def main():
 
 #		Desktopicons anzeigen
 
-		for wbicon in wbicons:
-			wbicon.ausgabe(screen, iconfont)
-			if leftclick:
-				if wbicon.rect.collidepoint(mousepos):
-					wbicon.clicked = True
-				else:
-					wbicon.clicked = False
-
-
-			if leftdoppelclick:
-				if wbicon.rect.collidepoint(mousepos):
-					befehl = wbicon.befehl	
-					leftdoppelclick = False	
+		if workbenchfenster==False:
+			for wbicon in wbicons:
+				wbicon.ausgabe(screen, iconfont)
+				if leftclick:
+					if wbicon.rect.collidepoint(mousepos):
+						wbicon.clicked = True
+					else:
+						wbicon.clicked = False
+	
+				if leftdoppelclick:
+					if wbicon.rect.collidepoint(mousepos):
+						befehl = wbicon.befehl	
+						leftdoppelclick = False	
 
 #		Fenster anzeigen
 
 		if len(aktivfenster)>0:
 			for afenster in aktivfenster:
-				afenster.ausgabe(screen)
+				afenster.ausgabe(screen, iconfont)
 				
 
 #		Fenster Mausclick
@@ -588,9 +600,6 @@ def main():
 						menueeintrag[7] = False
 					elif icons[aktivicon-1][1]=="trash":
 						menueeintrag[7] = True
-
-
-
 
 
 			menueposx = 4
@@ -697,8 +706,17 @@ def main():
 				aktivfenster[len(aktivfenster)-1].hinweistext.append("Version 0.3")
 				aktivfenster[len(aktivfenster)-1].hinweistext.append("(c) 2014-2024")
 				aktivfenster[len(aktivfenster)-1].hinweistext.append("by Wolfgang Schuster")
-
-
+			elif befehl=="Workbench als Hintergrund":
+				if workbenchfenster==True:
+					workbenchfenster=False
+					aktivfenster.pop(0)
+				else:
+					workbenchfenster=True
+					aktivfenster.append(fenster("workbench","Workbench",pygame.Rect(4,44,width-22,height-64)))
+					aktivfenster[0].icons.append(appicon(screen,"Ram Disk" ,"ramdisk", (aktivfenster[0].fensterrect.x+40,aktivfenster[0].fensterrect.y+30), "dir:/home/wolf"))
+					aktivfenster[0].icons.append(appicon(screen,"DH0" ,"hd", (aktivfenster[0].fensterrect.x+20,aktivfenster[0].fensterrect.y+100), "dir:/home/wolf/dh0"))
+					aktivfenster[0].icons.append(appicon(screen,"DH1" ,"hd", (aktivfenster[0].fensterrect.x+20,aktivfenster[0].fensterrect.y+170), "dir:/home/wolf/dh1"))
+					aktivfenster[0].icons.append(appicon(screen,"Shell" ,"cli", (aktivfenster[0].fensterrect.x+30,aktivfenster[0].fensterrect.y+240), "starte:Shell"))
 
 			befehl = ""
 		
