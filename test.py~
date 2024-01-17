@@ -56,7 +56,7 @@ class icon:
 		
 	def checkclicked(self,mousepos):
 		fensterpos = (100,100)  # Debug
-		if self.rect.collidepoint((mousepos[0]-fensterpos[0]-self.pos[0],mousepos[1]-fensterpos[1]-self.pos[1])):
+		if self.rect.collidepoint((mousepos[0]-fensterpos[0]-self.surface.get_rect()[0],mousepos[1]-fensterpos[1]-self.surface.get_rect()[1])):
 			self.clicked=True
 		else:
 			self.clicked=False

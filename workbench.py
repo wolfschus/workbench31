@@ -34,44 +34,42 @@ iconfont = pygame.font.Font("fonts/AmigaTopaz.ttf", 15)
 font = pygame.font.Font("fonts/AmigaTopaz.ttf", 15)
 	
 class appicon:
-	def __init__(self, screen, name ,typ, pos, befehl):
-		self.screen = screen
-		self.name = name
+	def __init__(self, name, typ, surface, pos, befehl, image, image2):
 		self.typ = typ		
-		self.pos = pos
+		self.name = name		
+		self.surface = surface		
+		self.pos = pos 		
 		self.befehl = befehl
-		self.rect = pygame.Rect(0,0,0,0)
+		self.image = pygame.image.load(image)
+		self.image2 = pygame.image.load(image2)
 		self.clicked = False
-		self.image = pygame.image.load("images/fd1.png")
-		self.cimage = pygame.image.load("images/fd2.png")
+		self.rect = pygame.Rect(0,0,0,0)
 		
-		if self.typ=="hd":		
-			self.image = pygame.image.load("images/hd1.png")
-			self.cimage = pygame.image.load("images/hd2.png")
-		elif self.typ=="cli":
-			self.image = pygame.image.load("images/cli1.png")
-			self.cimage = pygame.image.load("images/cli2.png")
-
-	def ausgabe(self,screen, font):
-			if self.clicked:
-				self.rect = screen.blit(self.cimage,self.pos)
-				pygame.draw.line(screen, (0,0,0), [self.rect.x-1, self.rect.y-2], [self.rect.x-1, self.rect.y+self.rect.h+2], 1)	
-				pygame.draw.line(screen, (0,0,0), [self.rect.x-1, self.rect.y-2], [self.rect.x+self.rect.w+1, self.rect.y-2], 2)	
-				pygame.draw.line(screen, (255,255,255), [self.rect.x+self.rect.w+1, self.rect.y-2], [self.rect.x+self.rect.w+1, self.rect.y+self.rect.h+1], 1)	
-				pygame.draw.line(screen, (255,255,255), [self.rect.x, self.rect.y+self.rect.h+2], [self.rect.x+self.rect.w+1, self.rect.y+self.rect.h+2], 2)
-				icontext = font.render(self.name, True, (0, 0, 0))
-				screen.blit(icontext,(self.rect.x+self.rect.w/2-icontext.get_rect().w/2,self.rect.y+self.rect.h+6))
-			else:
-				self.rect = screen.blit(self.image,self.pos)
-				pygame.draw.line(screen, (255,255,255), [self.rect.x-1, self.rect.y-2], [self.rect.x-1, self.rect.y+self.rect.h+2], 1)	
-				pygame.draw.line(screen, (255,255,255), [self.rect.x-1, self.rect.y-2], [self.rect.x+self.rect.w+1, self.rect.y-2], 2)	
-				pygame.draw.line(screen, (0,0,0), [self.rect.x+self.rect.w+1, self.rect.y-2], [self.rect.x+self.rect.w+1, self.rect.y+self.rect.h+1], 1)	
-				pygame.draw.line(screen, (0,0,0), [self.rect.x, self.rect.y+self.rect.h+2], [self.rect.x+self.rect.w+1, self.rect.y+self.rect.h+2], 2)
-				icontext = font.render(self.name, True, (0, 0, 0))
-				screen.blit(icontext,(self.rect.x+self.rect.w/2-icontext.get_rect().w/2,self.rect.y+self.rect.h+6))
-				
-			return
+	def ausgabe(self, font):
+		icon = pygame.Surface((self.image.get_width()+10,self.image.get_height()+6))
+		icon.fill((170, 170, 170))
+		if self.clicked:
+			pygame.draw.line(icon, (255,255,255), [icon.get_width()-1,0], [icon.get_width()-1,icon.get_height()-1], 1)
+			pygame.draw.line(icon, (255,255,255), [0, icon.get_height()-2], [icon.get_width()-1,icon.get_height()-2], 2)
+			pygame.draw.line(icon, (0,0,0), [0, 0], [icon.get_width()-1,0], 2)
+			pygame.draw.line(icon, (0,0,0), [0, 0], [0,icon.get_height()-1], 1)
+			icon.blit(self.image2,(5,5))
+		else:		
+			pygame.draw.line(icon, (0,0,0), [icon.get_width()-1,0], [icon.get_width()-1,icon.get_height()-1], 1)
+			pygame.draw.line(icon, (0,0,0), [0, icon.get_height()-2], [icon.get_width()-1,icon.get_height()-2], 2)
+			pygame.draw.line(icon, (255,255,255), [0, 0], [icon.get_width()-1,0], 2)
+			pygame.draw.line(icon, (255,255,255), [0, 0], [0,icon.get_height()-1], 1)
+			icon.blit(self.image,(5,3))
 		
+		self.rect = self.surface.blit(icon, self.pos)
+		text = font.render(self.name, True, (0, 0, 0))
+		self.surface.blit(text, (self.pos[0]+icon.get_width()/2-text.get_width()/2,self.pos[1]+icon.get_height()+3))
+		
+	def checkclicked(self, mousepos):
+		if self.rect.collidepoint(mousepos):
+			self.clicked=True
+		else:
+			self.clicked=False
 	
 class fenster:
 	def __init__(self, typ, fenstername, fensterrect):
@@ -82,7 +80,10 @@ class fenster:
 		self.savefensterrect.y = self.fensterrect.y
 		self.savefensterrect.w = self.fensterrect.w
 		self.savefensterrect.h = self.fensterrect.h						
-		self.outfensterrect = pygame.Rect(self.fensterrect.x-4,self.fensterrect.y-22,self.fensterrect.w+21,self.fensterrect.h+25)
+		self.outfensterrect = (self.fensterrect)
+		
+		self.surface = pygame.Surface((self.fensterrect.w, self.fensterrect.h))
+		
 		self.fenstername = fenstername
 		self.aktiv = True
 		self.farbe = (0,0,0)
@@ -103,81 +104,102 @@ class fenster:
 		else:
 			self.farbe = (170,170,170)		
 
-		pygame.draw.rect(screen, (170, 170, 170), self.fensterrect, 0)	
+#		pygame.draw.rect(screen, (170, 170, 170), self.fensterrect, 0)	
+
+		self.surface.fill((170, 170, 170))	
+
+		fensterwidth = self.surface.get_width()	
+		fensterheight = self.surface.get_height()
+		pygame.draw.rect(self.surface, (0,0,0), (0,0,fensterwidth,fensterheight), 1)			
 		
 		# Top	
-		pygame.draw.rect(screen, self.farbe, (self.fensterrect.x-4,self.fensterrect.y-20,self.fensterrect.w+22,18), 0)			
-		pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x-3,self.fensterrect.y-2,self.fensterrect.w+21,2), 0)			
-		pygame.draw.rect(screen, (255,255,255), (self.fensterrect.x-4,self.fensterrect.y-22,self.fensterrect.w+22,2), 0)
-		pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x-3,self.fensterrect.y-2,self.fensterrect.w+21,2), 0)			
-
+		pygame.draw.rect(self.surface, (255,255,255), (0,0,fensterwidth,20), 0)
+		pygame.draw.rect(self.surface, (0,0,0), (1,2,fensterwidth-1,20), 0)			
+		pygame.draw.rect(self.surface, self.farbe, (1,2,fensterwidth-2,18), 0)			
+		self.fenstertoprect=(18,0,fensterwidth-60, 20)
+		
 		if self.typ != "hinweis" and self.typ != "verlassen":
-			pygame.draw.line(screen, (0,0,0), [self.fensterrect.x+16, self.fensterrect.y-20], [self.fensterrect.x+16, self.fensterrect.y-3], 1)
-			pygame.draw.line(screen, (255,255,255), [self.fensterrect.x+17, self.fensterrect.y-20], [self.fensterrect.x+17, self.fensterrect.y-3], 1)
-			pygame.draw.line(screen, (0,0,0), [self.fensterrect.x+self.fensterrect.w-33, self.fensterrect.y-20], [self.fensterrect.x+self.fensterrect.w-33, self.fensterrect.y-3], 1)
-			pygame.draw.line(screen, (255,255,255), [self.fensterrect.x+self.fensterrect.w-32, self.fensterrect.y-20], [self.fensterrect.x+self.fensterrect.w-32, self.fensterrect.y-3], 1)
-			pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x+3,self.fensterrect.y-15,7,9), 0)			
-			pygame.draw.rect(screen, (255,255,255), (self.fensterrect.x+5,self.fensterrect.y-13,3,5), 0)					
-			pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x+self.fensterrect.w-27,self.fensterrect.y-18,15,14), 0)			
-			pygame.draw.rect(screen, self.farbe, (self.fensterrect.x+self.fensterrect.w-26,self.fensterrect.y-16,13,10), 0)			
-			pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x+self.fensterrect.w-27,self.fensterrect.y-17,8,7), 0)			
-			pygame.draw.rect(screen, (255,255,255), (self.fensterrect.x+self.fensterrect.w-25,self.fensterrect.y-16,4,4), 0)			
-			self.update()
-					
-		pygame.draw.line(screen, (0,0,0), [self.fensterrect.x+self.fensterrect.w-8, self.fensterrect.y-20], [self.fensterrect.x+self.fensterrect.w-8, self.fensterrect.y-3], 1)
-		pygame.draw.line(screen, (255,255,255), [self.fensterrect.x+self.fensterrect.w-7, self.fensterrect.y-20], [self.fensterrect.x+self.fensterrect.w-7, self.fensterrect.y-3], 1)		
-		pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x+self.fensterrect.w-4,self.fensterrect.y-18,13,10), 0)			
-		pygame.draw.rect(screen, (170,170,170), (self.fensterrect.x+self.fensterrect.w-3,self.fensterrect.y-16,11,6), 0)			
-		pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x+self.fensterrect.w+1,self.fensterrect.y-14,13,10), 0)			
-		pygame.draw.rect(screen, (255,255,255), (self.fensterrect.x+self.fensterrect.w+2,self.fensterrect.y-12,11,6), 0)			
-		self.update()
+
+			# Schliessen
+			pygame.draw.line(self.surface, (0,0,0), [17, 2], [17, 19], 1)
+			pygame.draw.line(self.surface, (255,255,255),  [18, 2], [18, 19], 1)
+			pygame.draw.rect(self.surface, (0,0,0), (6,6,6,10), 0)			
+			pygame.draw.rect(self.surface, (255,255,255), (7,8,4,6), 0)	
+			self.fenstercloserect = (1,2,17,18)	
+
+			# Vergößern/Verkleinern				
+			pygame.draw.line(self.surface, (0,0,0), [fensterwidth-44, 2], [fensterwidth-44, 19], 1)
+			pygame.draw.line(self.surface, (255,255,255),  [fensterwidth-43, 2], [fensterwidth-43, 19], 1)
+			pygame.draw.rect(self.surface, (0,0,0), (fensterwidth-39,4,14,14), 0)			
+			pygame.draw.rect(self.surface, self.farbe, (fensterwidth-38,6,12,10), 0)			
+			pygame.draw.rect(self.surface, (0,0,0), (fensterwidth-39,4,8,8), 0)			
+			if self.aktiv:
+				pygame.draw.rect(self.surface, (255,255,255), (fensterwidth-38,6,4,4), 0)		
+			else:	
+				pygame.draw.rect(self.surface, (170,170,170), (fensterwidth-38,6,4,4), 0)			
+			self.fenstervollrect = (fensterwidth-42,2,20,18)	
+#			self.update()
+
+		# Vordergrund					
+		pygame.draw.line(self.surface, (0,0,0),  [fensterwidth-22, 2], [fensterwidth-22, 19], 1)
+		if self.aktiv:
+			pygame.draw.line(self.surface, (255,255,255),  [fensterwidth-21, 2], [fensterwidth-21, 19], 1)
+		else:
+			pygame.draw.line(self.surface, (170,170,170),  [fensterwidth-21, 2], [fensterwidth-21, 19], 1)
+		pygame.draw.rect(self.surface, (0,0,0), (fensterwidth-18,4,10,10), 0)			
+		pygame.draw.rect(self.surface, (170,170,170), (fensterwidth-17,6,8,6), 0)			
+		pygame.draw.rect(self.surface, (0,0,0), (fensterwidth-13,8,10,10), 0)			
+		pygame.draw.rect(self.surface, (255,255,255), (fensterwidth-12,10,8,6), 0)			
+		self.fensterfrontrect=(fensterwidth-21,2, 20, 18)			
+#		self.update()
 
 		# Left
-		pygame.draw.rect(screen, self.farbe, (self.fensterrect.x-3,self.fensterrect.y,3,self.fensterrect.h+2), 0)			
-		pygame.draw.rect(screen, (255,255,255), (self.fensterrect.x-4,self.fensterrect.y-22,1,self.fensterrect.h+24), 0)			
-		pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x-1,self.fensterrect.y,1,self.fensterrect.h), 0)			
+		pygame.draw.rect(self.surface, self.farbe, (1,22,3,fensterheight-23), 0)			
+		pygame.draw.rect(self.surface, (255,255,255), (0,0,1,fensterheight), 0)			
+		pygame.draw.rect(self.surface, (0,0,0), (3,22,1,fensterheight-23), 0)			
 
 		# Bottom
-		pygame.draw.rect(screen, (255,255,255), (self.fensterrect.x,self.fensterrect.y+self.fensterrect.h,self.fensterrect.w+17,2), 0)			
-		pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x-4,self.fensterrect.y+self.fensterrect.h+2,self.fensterrect.w+21,2), 0)			
+		pygame.draw.rect(self.surface, (0,0,0), (1,fensterheight-2,fensterwidth-1,2), 0)			
+		pygame.draw.rect(self.surface, (255,255,255), (4,fensterheight-4,fensterwidth-5,2), 0)			
 							
 		# Right
 		if self.typ == "hinweis" or self.typ == "verlassen":
-			pygame.draw.rect(screen, self.farbe, (self.fensterrect.x+self.fensterrect.w+15,self.fensterrect.y,2,self.fensterrect.h+2), 0)			
-			pygame.draw.rect(screen, (255,255,255), (self.fensterrect.x+14+self.fensterrect.w,self.fensterrect.y,1,self.fensterrect.h+2), 0)			
-			pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x+self.fensterrect.w+17,self.fensterrect.y-20,1,self.fensterrect.h+24), 0)			
+			pygame.draw.rect(self.surface, self.farbe, (fensterwidth-3,22,2,fensterheight-24), 0)			
+			pygame.draw.rect(self.surface, (255,255,255), (fensterwidth-4,22,1,fensterheight-24), 0)			
 
 		else:
-			pygame.draw.rect(screen, self.farbe, (self.fensterrect.x+self.fensterrect.w+1,self.fensterrect.y,16,self.fensterrect.h+2), 0)			
-			pygame.draw.rect(screen, (255,255,255), (self.fensterrect.x+self.fensterrect.w,self.fensterrect.y,1,self.fensterrect.h+2), 0)			
-			pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x+self.fensterrect.w+17,self.fensterrect.y-20,1,self.fensterrect.h+24), 0)			
-			pygame.draw.rect(screen, (255,255,255), (self.fensterrect.x+self.fensterrect.w,self.fensterrect.y+self.fensterrect.h-15,17,2), 0)			
-	
-			pygame.draw.rect(screen, (0,0,0), (self.fensterrect.x+self.fensterrect.w+4,self.fensterrect.y+self.fensterrect.h-10,10,10), 0)			
-			pygame.draw.rect(screen, (255,255,255), (self.fensterrect.x+self.fensterrect.w+5,self.fensterrect.y+self.fensterrect.h-9,8,7), 0)			
-			pygame.draw.line(screen, (0,0,0), [self.fensterrect.x+self.fensterrect.w+4, self.fensterrect.y+self.fensterrect.h-2], [self.fensterrect.x+self.fensterrect.w+12, self.fensterrect.y+self.fensterrect.h-10], 2)
-			pygame.draw.line(screen, self.farbe, [self.fensterrect.x+self.fensterrect.w+3, self.fensterrect.y+self.fensterrect.h-3], [self.fensterrect.x+self.fensterrect.w+12, self.fensterrect.y+self.fensterrect.h-12], 4)
-			pygame.draw.rect(screen, self.farbe, (self.fensterrect.x+self.fensterrect.w+4,self.fensterrect.y+self.fensterrect.h-10,5,5), 0)			
-
+			pygame.draw.rect(self.surface, self.farbe, (fensterwidth-18,22,17,fensterheight-24), 0)			
+			pygame.draw.rect(self.surface, (255,255,255), (fensterwidth-19,22,1,fensterheight-24), 0)			
+			pygame.draw.rect(self.surface, (255,255,255), (fensterwidth-18,fensterheight-20,17,2), 0)	
+			pygame.draw.rect(self.surface, (0,0,0), (fensterwidth-15,fensterheight-16,12,12), 0)			
+			if self.aktiv:
+				pygame.draw.rect(self.surface, (255,255,255), (fensterwidth-14,fensterheight-14,10,8), 0)
+			else:		
+				pygame.draw.rect(self.surface, (170,170,170), (fensterwidth-14,fensterheight-14,10,8), 0)
+			pygame.draw.line(self.surface, (0,0,0), [fensterwidth-13,fensterheight-7], [fensterwidth-6,fensterheight-14], 2)
+			pygame.draw.rect(self.surface, self.farbe, (fensterwidth-15,fensterheight-16,6,6), 0)			
+			pygame.draw.line(self.surface, self.farbe, [fensterwidth-16,fensterheight-6], [fensterwidth-5,fensterheight-17], 3)
+			pygame.draw.line(self.surface, self.farbe, [fensterwidth-16,fensterheight-9], [fensterwidth-8,fensterheight-17], 3)
+			self.fenstersizerect = (fensterwidth-18,fensterheight-18,17,16)	
+			
 		for icon in self.icons:
-			icon.ausgabe(screen, font)
+			icon.ausgabe(font)
 				
 
 		tmptext = self.fenstername
 		fenstertext = font.render(tmptext, True, (0, 0, 0))
 		if self.typ == "hinweis" or self.typ == "verlassen":
-			screen.blit(fenstertext,(self.fensterrect.x,self.fensterrect.y-19))
+			self.surface.blit(fenstertext,(4,3))
 		else:
-			screen.blit(fenstertext,(self.fensterrect.x+22,self.fensterrect.y-19))
+			self.surface.blit(fenstertext,(21,3))
 					
 
 		if self.typ == "hinweis" or self.typ == "verlassen":
-			pygame.draw.rect(screen, (225,225,225), (self.fensterrect.x,self.fensterrect.y,self.fensterrect.w+14,self.fensterrect.h), 0)			
-			pygame.draw.rect(screen, (170,170,170), (self.fensterrect.x+5,self.fensterrect.y+5,self.fensterrect.w+4,self.fensterrect.h-44), 0)			
-			pygame.draw.line(screen, (0,0,0), [self.fensterrect.x+6, self.fensterrect.y+5], [self.fensterrect.x+6, self.fensterrect.y+self.fensterrect.h-40], 1)
-			pygame.draw.line(screen, (255,255,255), [self.fensterrect.x+self.fensterrect.w+8, self.fensterrect.y+5], [self.fensterrect.x+self.fensterrect.w+8, self.fensterrect.y+self.fensterrect.h-40], 1)		
-			pygame.draw.line(screen, (0,0,0), [self.fensterrect.x+6, self.fensterrect.y+5], [self.fensterrect.x+self.fensterrect.w+8, self.fensterrect.y+5], 1)
-			pygame.draw.line(screen, (255,255,255), [self.fensterrect.x+6, self.fensterrect.y+self.fensterrect.h-40], [self.fensterrect.x+self.fensterrect.w+8, self.fensterrect.y+self.fensterrect.h-40], 1)
+			pygame.draw.rect(self.surface, (225,225,225), (4,22,fensterwidth-8,fensterheight-26), 0)			
+			pygame.draw.rect(self.surface, (0,0,0), (9,27,fensterwidth-18,fensterheight-68), 0)			
+			pygame.draw.rect(self.surface, (255,255,255), (10,29,fensterwidth-19,fensterheight-68), 0)			
+			pygame.draw.rect(self.surface, (170,170,170), (10,29,fensterwidth-20,fensterheight-71), 0)			
+
 
 		if self.typ == "hinweis" or self.typ == "verlassen":
 			# OK-Button
@@ -185,25 +207,25 @@ class fenster:
 			buttonwidth = 30
 			buttonheight = 20
 			if self.typ == "hinweis":
-				buttonposx = self.fensterrect.x+(self.fensterrect.w+14)/2-buttonwidth/2
+				buttonposx = fensterwidth/2-buttonwidth/2
 			elif self.typ == "verlassen":
-				buttonposx = self.fensterrect.x+6
-			buttonposy = self.fensterrect.y+self.fensterrect.h-30				
-			pygame.draw.rect(screen, (255,255,255), (buttonposx-1,buttonposy-1,buttonwidth+2,buttonheight+2), 0)			
-			pygame.draw.rect(screen, (0,0,0), (buttonposx,buttonposy,buttonwidth+1,buttonheight+1), 0)			
-			self.fensterokrect = pygame.draw.rect(screen, (170,170,170), (buttonposx,buttonposy,buttonwidth,buttonheight), 0)			
+				buttonposx = 13
+			buttonposy = fensterheight-32				
+			pygame.draw.rect(self.surface, (255,255,255), (buttonposx-1,buttonposy-1,buttonwidth+2,buttonheight+2), 0)			
+			pygame.draw.rect(self.surface, (0,0,0), (buttonposx,buttonposy,buttonwidth+1,buttonheight+1), 0)			
+			self.fensterokrect = pygame.draw.rect(self.surface, (170,170,170), (buttonposx,buttonposy,buttonwidth,buttonheight), 0)			
 			buttontext = font.render(tmptext, True, (0, 0, 0))
-			screen.blit(buttontext,((buttonposx+buttonwidth/2-buttontext.get_width()/2,buttonposy+buttonheight/2-buttontext.get_height()/2)))
+			self.surface.blit(buttontext,((buttonposx+buttonwidth/2-buttontext.get_width()/2,buttonposy+buttonheight/2-buttontext.get_height()/2)))
 			
-				
+	
 			i = 0
 			for htext in self.hinweistext:	
 				tmptext = htext
 				hinweistext = font.render(tmptext, True, (0, 0, 0))
 				if self.typ == "verlassen":
-					screen.blit(hinweistext,(self.fensterrect.x+(self.fensterrect.w+14)/2-hinweistext.get_width()/2,self.fensterrect.y+10+i*(hinweistext.get_height()+2)))
+					self.surface.blit(hinweistext,(fensterwidth/2-hinweistext.get_width()/2,40+i*(hinweistext.get_height()+2)))
 				elif self.typ == "hinweis":
-					screen.blit(hinweistext,(self.fensterrect.x+24,self.fensterrect.y+16+i*(hinweistext.get_height()+2)))
+					self.surface.blit(hinweistext,(16,40+i*(hinweistext.get_height()+2)))
 				i = i + 1
 
 		if self.typ == "verlassen":
@@ -211,29 +233,43 @@ class fenster:
 			tmptext = "ABBRECHEN"
 			buttonwidth = 80
 			buttonheight = 20
-			buttonposx = self.fensterrect.x+self.fensterrect.w+14-buttonwidth-6
-			buttonposy = self.fensterrect.y+self.fensterrect.h-30
-			pygame.draw.rect(screen, (255,255,255), (buttonposx-1,buttonposy-1,buttonwidth+2,buttonheight+2), 0)			
-			pygame.draw.rect(screen, (0,0,0), (buttonposx,buttonposy,buttonwidth+1,buttonheight+1), 0)			
-			self.fenstercancelrect = pygame.draw.rect(screen, (170,170,170), (buttonposx,buttonposy,buttonwidth,buttonheight), 0)			
+			buttonposx = fensterwidth-buttonwidth-12
+			buttonposy = fensterheight-32
+			pygame.draw.rect(self.surface, (255,255,255), (buttonposx-1,buttonposy-1,buttonwidth+2,buttonheight+2), 0)			
+			pygame.draw.rect(self.surface, (0,0,0), (buttonposx,buttonposy,buttonwidth+1,buttonheight+1), 0)			
+			self.fenstercancelrect = pygame.draw.rect(self.surface, (170,170,170), (buttonposx,buttonposy,buttonwidth,buttonheight), 0)			
 			buttontext = font.render(tmptext, True, (0, 0, 0))
-			screen.blit(buttontext,((buttonposx+buttonwidth/2-buttontext.get_width()/2,buttonposy+buttonheight/2-buttontext.get_height()/2)))
-			
-		if self.verschieben==True:			
-			pygame.draw.rect(screen, (255, 0, 0), self.outfensterrect, 2)
-			print("Verschieben:", self.outfensterrect)
+			self.surface.blit(buttontext,((buttonposx+buttonwidth/2-buttontext.get_width()/2,buttonposy+buttonheight/2-buttontext.get_height()/2)))
 
-#		Debug
-#		pygame.draw.rect(screen, (255,0,0), (self.fenstervollrect), 0)			
+		# Debug Close			
+#		pygame.draw.rect(self.surface, (255,0,0), (self.fenstercloserect), 1)			
+#		pygame.draw.rect(self.surface, (255,0,0), (self.fenstervollrect), 1)			
+#		pygame.draw.rect(self.surface, (255,0,0), (self.fenstersizerect), 1)			
+#		pygame.draw.rect(self.surface, (255,0,0), (self.fenstertoprect), 1)			
+#		pygame.draw.rect(self.surface, (255,0,0), (self.fensterfrontrect), 1)			
+
+
+		screen.blit(self.surface,(self.fensterrect.x, self.fensterrect.y))
+
+		pygame.draw.rect(screen, (0,255,0), (self.fensterrect.x+self.fenstercloserect[0],self.fensterrect.y+self.fenstercloserect[1],self.fenstercloserect[2],self.fenstercloserect[3]), 1)			
+#		pygame.draw.rect(screen, (0,255,0), (self.fenstervollrect), 1)			
+#		pygame.draw.rect(screen, (0,255,0), (self.fenstersizerect), 1)			
+#		pygame.draw.rect(screen, (0,255,0), (self.fenstertoprect), 1)			
+#		pygame.draw.rect(screen, (0,255,0), (self.fensterfrontrect), 1)			
+		
+		if self.verschieben==True:			
+			pygame.draw.rect(screen, (255, 0, 0), self.fensterrect, 3)
+#			print("Verschieben:", self.outfensterrect)
+		
 
 		return
 
 	def update(self):
-		self.fenstercloserect = (self.fensterrect.x-2,self.fensterrect.y-20,18,18)	
-		self.fenstervollrect = (self.fensterrect.x+self.fensterrect.w-31,self.fensterrect.y-20,23,18)	
-		self.fenstersizerect = (self.fensterrect.x+self.fensterrect.w,self.fensterrect.y+self.fensterrect.h-14,17,15)	
-		self.fenstertoprect = (self.fensterrect.x+18,self.fensterrect.y-20,self.fensterrect.w-51,18)	
-		self.fensterfrontrect = (self.fensterrect.x+self.fensterrect.w-7,self.fensterrect.y-20,23,18)	
+#		self.fenstercloserect = (4,30,18,18)	
+#		self.fenstervollrect = (self.fensterrect.x+self.fensterrect.w-31,self.fensterrect.y-20,23,18)	
+#		self.fenstersizerect = (self.fensterrect.x+self.fensterrect.w,self.fensterrect.y+self.fensterrect.h-14,17,15)	
+#		self.fenstertoprect = (self.fensterrect.x+18,self.fensterrect.y-20,self.fensterrect.w-51,18)	
+#		self.fensterfrontrect = (self.fensterrect.x+self.fensterrect.w-7,self.fensterrect.y-20,23,18)	
 		
 		for icon in self.icons:
 			print(icon.pos[0] + self.fensterrect.x)
@@ -322,12 +358,15 @@ def main():
 			print("Buttons: ",joystick.get_numbuttons())
 
 # Icons Workbench
+
 	wbicons = []
-	wbicons.append(appicon(screen,"Ram Disk" ,"ramdisk", (40,30), "dir:/home/wolf"))
-	wbicons.append(appicon(screen,"DH0" ,"hd", (20,100), "dir:/home/wolf/dh0"))
-	wbicons.append(appicon(screen,"DH1" ,"hd", (20,170), "dir:/home/wolf/dh1"))
-	wbicons.append(appicon(screen,"Shell" ,"cli", (30,240), "starte:Shell"))
-		
+	wbicons.append(appicon("Ram Disk" ,"ramdisk", screen, (40,30), "dir:/home/wolf", "images/fd1.png", "images/fd2.png"))
+	wbicons.append(appicon("DH0" ,"hd", screen, (20,100), "dir:/home/wolf/dh0", "images/hd1.png", "images/hd2.png"))
+	wbicons.append(appicon("DH1" ,"hd", screen, (20,170), "dir:/home/wolf/dh1", "images/hd1.png", "images/hd2.png"))
+	wbicons.append(appicon("Shell" ,"cli", screen, (30,240), "starte:Shell", "images/cli1.png", "images/cli2.png"))
+
+#	wbicon = appicon("Ram Disk" ,"ramdisk", screen, (40,30), "dir:/home/wolf", "images/fd1.png", "images/fd1.png")
+			
 	#Menue Images
 	menuerechtsoben = pygame.image.load("images/menuerechtsoben.png")
 	
@@ -514,19 +553,19 @@ def main():
 
 #		Desktopicons anzeigen
 
-		if workbenchfenster==False:
-			for wbicon in wbicons:
-				wbicon.ausgabe(screen, iconfont)
-				if leftclick:
-					if wbicon.rect.collidepoint(mousepos):
-						wbicon.clicked = True
-					else:
-						wbicon.clicked = False
-	
-				if leftdoppelclick:
-					if wbicon.rect.collidepoint(mousepos):
-						befehl = wbicon.befehl	
-						leftdoppelclick = False	
+#		wbicon.ausgabe(iconfont)
+		
+#		if workbenchfenster==False:
+
+		for wbicon in wbicons:
+			wbicon.ausgabe(iconfont)
+			if leftclick:
+				wbicon.checkclicked(leftclickpos)
+			if leftdoppelclick:
+				if wbicon.rect.collidepoint(mousepos):
+					befehl = wbicon.befehl	
+					leftdoppelclick = False	
+
 
 #		Fenster anzeigen
 
@@ -692,14 +731,14 @@ def main():
 		if befehl != "":
 			print ("Befehl:", befehl)	
 			if befehl=="Workbench verlassen":
-				aktivfenster.append(fenster("verlassen","Workbench",pygame.Rect(5,43,200,100)))
+				aktivfenster.append(fenster("verlassen","Workbench",pygame.Rect(5,43,200,120)))
 				aktivfenster[len(aktivfenster)-1].hinweistext = ["Wollen Sie wirklich die"]				
 				aktivfenster[len(aktivfenster)-1].hinweistext.append("Workbench verlassen?")
 #				running=False
 			elif befehl=="Letzte Meldung anzeigen":
 				menuemode=0
 			elif befehl=="starte:Shell":
-				aktivfenster.append(fenster("shell","AmigaShell",pygame.Rect(4,120,width-22,280)))
+				aktivfenster.append(fenster("shell","AmigaShell",pygame.Rect(4,120,width-32,280)))
 			elif befehl=="Version Copyright":
 				aktivfenster.append(fenster("hinweis","Version",pygame.Rect(10,50,200,160)))
 				aktivfenster[len(aktivfenster)-1].hinweistext = ["Amigang Workbench 3.1"]
@@ -713,10 +752,10 @@ def main():
 				else:
 					workbenchfenster=True
 					aktivfenster.append(fenster("workbench","Workbench",pygame.Rect(4,44,width-22,height-64)))
-					aktivfenster[0].icons.append(appicon(screen,"Ram Disk" ,"ramdisk", (aktivfenster[0].fensterrect.x+40,aktivfenster[0].fensterrect.y+30), "dir:/home/wolf"))
-					aktivfenster[0].icons.append(appicon(screen,"DH0" ,"hd", (aktivfenster[0].fensterrect.x+20,aktivfenster[0].fensterrect.y+100), "dir:/home/wolf/dh0"))
-					aktivfenster[0].icons.append(appicon(screen,"DH1" ,"hd", (aktivfenster[0].fensterrect.x+20,aktivfenster[0].fensterrect.y+170), "dir:/home/wolf/dh1"))
-					aktivfenster[0].icons.append(appicon(screen,"Shell" ,"cli", (aktivfenster[0].fensterrect.x+30,aktivfenster[0].fensterrect.y+240), "starte:Shell"))
+					aktivfenster[0].icons.append(appicon("Ram Disk" ,"ramdisk", screen, (40,30), "dir:/home/wolf", "images/fd1.png", "images/fd2.png"))
+					aktivfenster[0].icons.append(appicon("DH0" ,"hd", screen, (20,100), "dir:/home/wolf/dh0", "images/hd1.png", "images/hd2.png"))
+					aktivfenster[0].icons.append(appicon("DH1" ,"hd", screen, (20,170), "dir:/home/wolf/dh1", "images/hd1.png", "images/hd2.png"))
+					aktivfenster[0].icons.append(appicon("Shell" ,"cli", screen, (30,240), "starte:Shell", "images/cli1.png", "images/cli2.png"))
 
 			befehl = ""
 		
