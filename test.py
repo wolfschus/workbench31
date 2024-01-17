@@ -34,28 +34,26 @@ class icon:
 		self.rect = pygame.Rect(0,0,0,0)
 		
 	def ausgabe(self, pos):
-		icon = pygame.Surface((self.image.get_width()+10,self.image.get_height()+10))
+		self.pos = pos
+		icon = pygame.Surface((self.image.get_width()+10,self.image.get_height()+6))
 		icon.fill((170, 170, 170))
 		if self.clicked:
 			pygame.draw.line(icon, (255,255,255), [icon.get_width()-1,0], [icon.get_width()-1,icon.get_height()-1], 1)
-			pygame.draw.line(icon, (255,255,255), [0, icon.get_height()-1], [icon.get_width()-1,icon.get_height()-1], 1)
-			pygame.draw.line(icon, (0,0,0), [0, 0], [icon.get_width()-1,0], 1)
+			pygame.draw.line(icon, (255,255,255), [0, icon.get_height()-2], [icon.get_width()-1,icon.get_height()-2], 2)
+			pygame.draw.line(icon, (0,0,0), [0, 0], [icon.get_width()-1,0], 2)
 			pygame.draw.line(icon, (0,0,0), [0, 0], [0,icon.get_height()-1], 1)
 			icon.blit(self.image,(5,5))
 		else:		
 			pygame.draw.line(icon, (0,0,0), [icon.get_width()-1,0], [icon.get_width()-1,icon.get_height()-1], 1)
-			pygame.draw.line(icon, (0,0,0), [0, icon.get_height()-1], [icon.get_width()-1,icon.get_height()-1], 1)
-			pygame.draw.line(icon, (255,255,255), [0, 0], [icon.get_width()-1,0], 1)
+			pygame.draw.line(icon, (0,0,0), [0, icon.get_height()-2], [icon.get_width()-1,icon.get_height()-2], 2)
+			pygame.draw.line(icon, (255,255,255), [0, 0], [icon.get_width()-1,0], 2)
 			pygame.draw.line(icon, (255,255,255), [0, 0], [0,icon.get_height()-1], 1)
-			icon.blit(self.image2,(5,5))
+			icon.blit(self.image2,(5,3))
 			
 		self.surface.blit(icon, pos)
 		return(icon)
 
 	
-hd1_image = pygame.image.load("images/hd1.png")
-hd2_image = pygame.image.load("images/hd2.png")
-
 def main():
 
 	menueaktion = ""
@@ -65,8 +63,13 @@ def main():
 	pygame.display.set_caption("Amigang Workbench 3.1")
 	pygame.mouse.set_visible(1)
 
-	dh0_icon = icon("DH0:", "hd", screen, "dir:/home/wolf", hd1_image, hd2_image)	
 
+	fensterpos=(200,100)
+	fenster = pygame.Surface(fensterpos)
+	fenster.fill((170, 170, 170))
+	pygame.draw.rect(fenster, (0,0,0), (fenster.get_rect()), 1)			
+
+	dh0_icon = icon("DH0:", "hd", fenster, "dir:/home/wolf", pygame.image.load("images/hd2.png"), pygame.image.load("images/hd1.png"))
 		
 	running = True
 	while running:
@@ -100,7 +103,18 @@ def main():
 						
 		screen.fill((170, 170, 170))
 
-		dh0_icon.ausgabe((20,20))
+		screen.blit(fenster, (100,100))
+				
+		dh0_icon.rect = dh0_icon.ausgabe((20,20)).get_rect()
+
+		print(fensterpos, dh0_icon.pos, mousepos)
+		if dh0_icon.rect.collidepoint((mousepos[0]-dh0_icon.pos[0]-fensterpos[0],mousepos[1]-dh0_icon.pos[1]-fensterpos[1])):
+			dh0_icon.clicked=True
+		else:
+			dh0_icon.clicked=False
+
+#		dh0_icon.rect=dh0_icon.ausgabe((20,20))
+#		print(dh0_icon.rect.get_rect())
 		
 		pygame.display.flip()
 	
