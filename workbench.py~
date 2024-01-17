@@ -251,12 +251,11 @@ class fenster:
 
 		screen.blit(self.surface,(self.fensterrect.x, self.fensterrect.y))
 
-		print(self.fenstercloserect[0])
 		pygame.draw.rect(screen, (0,255,0), (self.fensterrect.x+self.fenstercloserect[0],self.fensterrect.y+self.fenstercloserect[1],self.fenstercloserect[2],self.fenstercloserect[3]), 1)			
-#		pygame.draw.rect(screen, (0,255,0), (self.fenstervollrect), 1)			
-#		pygame.draw.rect(screen, (0,255,0), (self.fenstersizerect), 1)			
-#		pygame.draw.rect(screen, (0,255,0), (self.fenstertoprect), 1)			
-#		pygame.draw.rect(screen, (0,255,0), (self.fensterfrontrect), 1)			
+		pygame.draw.rect(screen, (0,255,0), (self.fensterrect.x+self.fenstervollrect[0],self.fensterrect.y+self.fenstervollrect[1],self.fenstervollrect[2],self.fenstervollrect[3]), 1)			
+		pygame.draw.rect(screen, (0,255,0), (self.fensterrect.x+self.fenstersizerect[0],self.fensterrect.y+self.fenstersizerect[1],self.fenstersizerect[2],self.fenstersizerect[3]), 1)			
+		pygame.draw.rect(screen, (0,255,0), (self.fensterrect.x+self.fenstertoprect[0],self.fensterrect.y+self.fenstertoprect[1],self.fenstertoprect[2],self.fenstertoprect[3]), 1)			
+		pygame.draw.rect(screen, (0,255,0), (self.fensterrect.x+self.fensterfromtrect[0],self.fensterrect.y+self.fensterfrontrect[1],self.fensterfrontrect[2],self.fensterfrontrect[3]), 1)			
 		
 		if self.verschieben==True:			
 			pygame.draw.rect(screen, (255, 0, 0), self.fensterrect, 3)
