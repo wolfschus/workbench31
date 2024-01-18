@@ -241,27 +241,16 @@ class fenster:
 			buttontext = font.render(tmptext, True, (0, 0, 0))
 			self.surface.blit(buttontext,((buttonposx+buttonwidth/2-buttontext.get_width()/2,buttonposy+buttonheight/2-buttontext.get_height()/2)))
 
-		# Debug Close			
-#		pygame.draw.rect(self.surface, (255,0,0), (self.fenstercloserect), 1)			
-#		pygame.draw.rect(self.surface, (255,0,0), (self.fenstervollrect), 1)			
-#		pygame.draw.rect(self.surface, (255,0,0), (self.fenstersizerect), 1)			
-#		pygame.draw.rect(self.surface, (255,0,0), (self.fenstertoprect), 1)			
-#		pygame.draw.rect(self.surface, (255,0,0), (self.fensterfrontrect), 1)			
-
-
 		screen.blit(self.surface,(self.fensterrect.x, self.fensterrect.y))
 
-		pygame.draw.rect(screen, (0,255,0), (self.fensterrect.x+self.fenstercloserect[0],self.fensterrect.y+self.fenstercloserect[1],self.fenstercloserect[2],self.fenstercloserect[3]), 1)			
-		pygame.draw.rect(screen, (0,255,0), (self.fensterrect.x+self.fenstervollrect[0],self.fensterrect.y+self.fenstervollrect[1],self.fenstervollrect[2],self.fenstervollrect[3]), 1)			
-		pygame.draw.rect(screen, (0,255,0), (self.fensterrect.x+self.fenstersizerect[0],self.fensterrect.y+self.fenstersizerect[1],self.fenstersizerect[2],self.fenstersizerect[3]), 1)			
-		pygame.draw.rect(screen, (0,255,0), (self.fensterrect.x+self.fenstertoprect[0],self.fensterrect.y+self.fenstertoprect[1],self.fenstertoprect[2],self.fenstertoprect[3]), 1)			
-		pygame.draw.rect(screen, (0,255,0), (self.fensterrect.x+self.fensterfrontrect[0],self.fensterrect.y+self.fensterfrontrect[1],self.fensterfrontrect[2],self.fensterfrontrect[3]), 1)			
-		
 		if self.verschieben==True:			
 			pygame.draw.rect(screen, (255, 0, 0), self.fensterrect, 3)
 #			print("Verschieben:", self.outfensterrect)
 		
-
+# Debug
+#		print(self.fenstercancelrect)
+#		pygame.draw.rect(screen, (255,0,0), (self.fensterrect.x+self.fenstercancelrect[0],self.fensterrect.y+self.fenstercancelrect[1],self.fenstercancelrect[2],self.fenstercancelrect[3]),0)
+		
 		return
 
 	def update(self):
@@ -285,18 +274,18 @@ class fenster:
 			self.aktiv=False
 
 		if self.aktiv:
-			if pygame.Rect(self.fenstercloserect).collidepoint(leftclickpos):
+			if pygame.Rect(self.fensterrect.x+self.fenstercloserect[0],self.fensterrect.y+self.fenstercloserect[1],self.fenstercloserect[2],self.fenstercloserect[3]).collidepoint(leftclickpos):
 				return("close")
-			elif pygame.Rect(self.fensterokrect).collidepoint(leftclickpos):
+			elif pygame.Rect(self.fensterrect.x+self.fensterokrect[0],self.fensterrect.y+self.fensterokrect[1],self.fensterokrect[2],self.fensterokrect[3]).collidepoint(leftclickpos):
 				if self.typ=="verlassen":
 					return("exit")
 				elif self.typ=="hinweis":
 					return("close")
 				else:
 					return("ok")
-			elif pygame.Rect(self.fenstercancelrect).collidepoint(leftclickpos):
+			elif pygame.Rect(self.fensterrect.x+self.fenstercancelrect[0],self.fensterrect.y+self.fenstercancelrect[1],self.fenstercancelrect[2],self.fenstercancelrect[3]).collidepoint(leftclickpos):
 				return("close")
-			elif pygame.Rect(self.fenstervollrect).collidepoint(leftclickpos):
+			elif pygame.Rect(self.fensterrect.x+self.fenstervollrect[0],self.fensterrect.y+self.fenstervollrect[1],self.fenstervollrect[2],self.fenstervollrect[3]).collidepoint(leftclickpos):
 				if self.fensterrect==self.savefensterrect:
 					self.savefensterrect.x = self.fensterrect.x
 					self.savefensterrect.y = self.fensterrect.y
@@ -311,20 +300,24 @@ class fenster:
 					self.fensterrect.y = self.savefensterrect.y
 					self.fensterrect.w = self.savefensterrect.w
 					self.fensterrect.h = self.savefensterrect.h	
-				self.update()
+#				self.update()
 				self.updateout()				
 				return("max")					
 
-			elif pygame.Rect(self.fensterfrontrect).collidepoint(leftclickpos):
+			elif pygame.Rect(self.fensterrect.x+self.fensterfrontrect[0],self.fensterrect.y+self.fensterfrontrect[1],self.fensterfrontrect[2],self.fensterfrontrect[3]).collidepoint(leftclickpos):
 				print("To Front")
 				return("front")
 
-			elif pygame.Rect(self.fenstertoprect).collidepoint(leftclickpos):
+			elif pygame.Rect(self.fensterrect.x+self.fenstertoprect[0],self.fensterrect.y+self.fenstertoprect[1],self.fenstertoprect[2],self.fenstertoprect[3]).collidepoint(leftclickpos):
 				self.verschieben=True
 				self.outfensterrect.x = mousepos[0]-leftclickpos[0]+self.fensterrect.x-4
 				self.outfensterrect.y = mousepos[1]-leftclickpos[1]+self.fensterrect.y-22
 				self.update()
 				return("top")
+
+			elif pygame.Rect(self.fensterrect.x+self.fenstersizerect[0],self.fensterrect.y+self.fenstersizerect[1],self.fenstersizerect[2],self.fenstersizerect[3]).collidepoint(leftclickpos):
+				print("size")
+				return("size")
 
 				
 		return
