@@ -37,7 +37,6 @@ class appicon:
 	def __init__(self, name, typ, pos, befehl, image, image2):
 		self.typ = typ		
 		self.name = name		
-#		self.surface = surface		
 		self.pos = pos 		
 		self.befehl = befehl
 		self.image = pygame.image.load(image)
@@ -88,6 +87,7 @@ class fenster:
 		self.hinweistext = []
 		self.icons = []
 		self.verschieben = False
+		self.size = False
 		self.fenstercloserect = (0,0,0,0)	
 		self.fenstertoprect = (0,0,0,0)	
 		self.fenstervollrect = (0,0,0,0)	
@@ -95,13 +95,17 @@ class fenster:
 		self.fenstersizerect = (0,0,0,0)	
 		self.fensterokrect = (0,0,0,0)	
 		self.fenstercancelrect = (0,0,0,0)	
+		self.fensterlinksrect = (0,0,0,0)	
+		self.fensterrechtsrect = (0,0,0,0)	
+		self.fensterobenrect = (0,0,0,0)	
+		self.fensteruntenrect = (0,0,0,0)	
 		self.surface = pygame.Surface((self.fensterrect.w, self.fensterrect.h))
 
 		if self.typ == "workbench":
-			self.icons.append(appicon("Ram Disk" ,"ramdisk", self.surface, (40,30), "dir:/home/wolf", "images/fd1.png", "images/fd2.png"))
-			self.icons.append(appicon("DH0" ,"hd", self.surface, (20,100), "dir:/home/wolf/dh0", "images/hd1.png", "images/hd2.png"))
-			self.icons.append(appicon("DH1" ,"hd", self.surface, (20,170), "dir:/home/wolf/dh1", "images/hd1.png", "images/hd2.png"))
-			self.icons.append(appicon("Shell" ,"cli", self.surface, (30,240), "starte:Shell", "images/cli1.png", "images/cli2.png"))
+			self.icons.append(appicon("Ram Disk" ,"ramdisk", (40,30), "dir:/home/wolf", "images/fd1.png", "images/fd2.png"))
+			self.icons.append(appicon("DH0" ,"hd", (20,100), "dir:/home/wolf/dh0", "images/hd1.png", "images/hd2.png"))
+			self.icons.append(appicon("DH1" ,"hd", (20,170), "dir:/home/wolf/dh1", "images/hd1.png", "images/hd2.png"))
+			self.icons.append(appicon("Shell" ,"cli", (30,240), "starte:Shell", "images/cli1.png", "images/cli2.png"))
 			
 			
 	def ausgabe(self, screen, font):
@@ -113,9 +117,6 @@ class fenster:
 
 		self.surface = pygame.Surface((self.fensterrect.w, self.fensterrect.h))
 		
-
-#		pygame.draw.rect(screen, (170, 170, 170), self.fensterrect, 0)	
-
 		self.surface.fill((170, 170, 170))	
 
 		fensterwidth = self.surface.get_width()	
@@ -170,8 +171,23 @@ class fenster:
 
 		# Bottom
 		pygame.draw.rect(self.surface, (0,0,0), (1,fensterheight-2,fensterwidth-1,2), 0)			
-		pygame.draw.rect(self.surface, (255,255,255), (4,fensterheight-4,fensterwidth-5,2), 0)			
-							
+		pygame.draw.rect(self.surface, (255,255,255), (4,fensterheight-4,fensterwidth-5,2), 0)	
+		
+		if self.typ == "file":
+			pygame.draw.rect(self.surface, self.farbe, (1,fensterheight-18,fensterwidth-20,16), 0)			
+			pygame.draw.rect(self.surface, (255,255,255), (4,fensterheight-20,fensterwidth-16,2), 0)	
+			pygame.draw.rect(self.surface, (0,0,0), (fensterwidth-20,fensterheight-18,1,16), 0)	
+			pygame.draw.rect(self.surface, (255,255,255), (fensterwidth-38,fensterheight-18,1,16), 0)	
+			pygame.draw.rect(self.surface, (0,0,0), (fensterwidth-39,fensterheight-18,1,16), 0)	
+			pygame.draw.rect(self.surface, (255,255,255), (fensterwidth-57,fensterheight-18,1,16), 0)	
+			self.fensterlinksrect = (fensterwidth-56,fensterheight-18,18,16)	
+			self.fensterrechtsrect = (fensterwidth-37,fensterheight-18,17,16)	
+			pygame.draw.line(self.surface, (0,0,0), [fensterwidth-46,fensterheight-15], [fensterwidth-51,fensterheight-10], 3)
+			pygame.draw.line(self.surface, (0,0,0), [fensterwidth-51,fensterheight-10], [fensterwidth-46,fensterheight-5], 3)
+			pygame.draw.line(self.surface, (0,0,0), [fensterwidth-30,fensterheight-15], [fensterwidth-25,fensterheight-10], 3)
+			pygame.draw.line(self.surface, (0,0,0), [fensterwidth-25,fensterheight-10], [fensterwidth-30,fensterheight-5], 3)
+			pygame.draw.rect(self.surface, (125,125,125), (4,fensterheight-16,fensterwidth-60,12), 0)			
+										
 		# Right
 		if self.typ == "hinweis" or self.typ == "verlassen":
 			pygame.draw.rect(self.surface, self.farbe, (fensterwidth-3,22,2,fensterheight-24), 0)			
@@ -191,9 +207,24 @@ class fenster:
 			pygame.draw.line(self.surface, self.farbe, [fensterwidth-16,fensterheight-6], [fensterwidth-5,fensterheight-17], 3)
 			pygame.draw.line(self.surface, self.farbe, [fensterwidth-16,fensterheight-9], [fensterwidth-8,fensterheight-17], 3)
 			self.fenstersizerect = (fensterwidth-18,fensterheight-18,17,16)	
+			if self.typ == "file":
+				pygame.draw.rect(self.surface, (0,0,0), (fensterwidth-18,fensterheight-21,17,1), 0)			
+				pygame.draw.rect(self.surface, (255,255,255), (fensterwidth-18,fensterheight-38,17,1), 0)			
+				pygame.draw.rect(self.surface, (0,0,0), (fensterwidth-18,fensterheight-39,17,1), 0)			
+				pygame.draw.rect(self.surface, (255,255,255), (fensterwidth-18,fensterheight-57,17,1), 0)			
+				self.fensteruntenrect = (fensterwidth-18,fensterheight-37,17,16)	
+				self.fensterobenrect = (fensterwidth-18,fensterheight-56,17,17)	
+				pygame.draw.line(self.surface, (0,0,0), [fensterwidth-15,fensterheight-32], [fensterwidth-10,fensterheight-27], 3)
+				pygame.draw.line(self.surface, (0,0,0), [fensterwidth-10,fensterheight-27], [fensterwidth-5,fensterheight-32], 3)
+				pygame.draw.line(self.surface, (0,0,0), [fensterwidth-15,fensterheight-46], [fensterwidth-10,fensterheight-51], 3)
+				pygame.draw.line(self.surface, (0,0,0), [fensterwidth-5,fensterheight-46], [fensterwidth-10,fensterheight-51], 3)
+				pygame.draw.rect(self.surface, (125,125,125), (fensterwidth-16,24,13,fensterheight-83), 0)			
+
+
+
 			
 		for icon in self.icons:
-			icon.ausgabe(font)
+			icon.ausgabe(self.surface,font)
 				
 
 		tmptext = self.fenstername
@@ -288,7 +319,6 @@ class fenster:
 			elif pygame.Rect(self.fensterrect.x+self.fenstercancelrect[0],self.fensterrect.y+self.fenstercancelrect[1],self.fenstercancelrect[2],self.fenstercancelrect[3]).collidepoint(leftclickpos):
 				return("close")
 			elif pygame.Rect(self.fensterrect.x+self.fenstervollrect[0],self.fensterrect.y+self.fenstervollrect[1],self.fenstervollrect[2],self.fenstervollrect[3]).collidepoint(leftclickpos):
-				print(self.fensterrect)
 				if self.fensterrect==self.savefensterrect:
 					self.savefensterrect.x = self.fensterrect.x
 					self.savefensterrect.y = self.fensterrect.y
@@ -303,7 +333,6 @@ class fenster:
 					self.fensterrect.y = self.savefensterrect.y
 					self.fensterrect.w = self.savefensterrect.w
 					self.fensterrect.h = self.savefensterrect.h	
-				print(self.fensterrect)
 					
 #				self.update()
 #				self.updateout()				
@@ -318,7 +347,7 @@ class fenster:
 				return("top")
 
 			elif pygame.Rect(self.fensterrect.x+self.fenstersizerect[0],self.fensterrect.y+self.fenstersizerect[1],self.fenstersizerect[2],self.fenstersizerect[3]).collidepoint(leftclickpos):
-				print("size")
+				self.size=True
 				return("size")
 
 				
@@ -568,7 +597,7 @@ def main():
 			for afenster in aktivfenster:
 				afenster.ausgabe(screen, iconfont)
 				screen.blit(afenster.surface,(afenster.fensterrect.x, afenster.fensterrect.y))
-				if afenster.verschieben:
+				if afenster.verschieben or afenster.size:
 					pygame.draw.rect(screen, (255, 0, 0), afenster.outfensterrect, 3)
 
 				
@@ -589,15 +618,22 @@ def main():
 						afenster.outfensterrect.y = afenster.fensterrect.y + mousepos[1]-leftclickpos[1]
 						afenster.outfensterrect.w = afenster.fensterrect.w
 						afenster.outfensterrect.h = afenster.fensterrect.h
-						print(mousepos[0]-leftclickpos[0],mousepos[1]-leftclickpos[1])
-						print(afenster.fensterrect)												
-						print(afenster.outfensterrect)	
+					elif aktion == "size" or afenster.size:
+						afenster.outfensterrect.x = afenster.fensterrect.x
+						afenster.outfensterrect.y = afenster.fensterrect.y
+						afenster.outfensterrect.w = afenster.fensterrect.w + mousepos[0]-leftclickpos[0]
+						afenster.outfensterrect.h = afenster.fensterrect.h + mousepos[1]-leftclickpos[1]
 																	
 				else:
 					if afenster.verschieben:					
 						afenster.fensterrect.x = afenster.outfensterrect.x
 						afenster.fensterrect.y = afenster.outfensterrect.y
 						afenster.verschieben=False
+						leftclick=False				
+					elif afenster.size:					
+						afenster.fensterrect.w = afenster.outfensterrect.w
+						afenster.fensterrect.h = afenster.outfensterrect.h
+						afenster.size=False
 						leftclick=False				
 					
 			
@@ -746,6 +782,10 @@ def main():
 				menuemode=0
 			elif befehl=="starte:Shell":
 				aktivfenster.append(fenster("shell","AmigaShell",pygame.Rect(4,120,width-32,280)))
+			elif befehl=="dir:/home/wolf/dh0":
+				aktivfenster.append(fenster("file","DH0",pygame.Rect(4,120,width-32,280)))
+			elif befehl=="dir:/home/wolf/dh1":
+				aktivfenster.append(fenster("file","DH1",pygame.Rect(4,120,width-32,280)))
 			elif befehl=="Version Copyright":
 				aktivfenster.append(fenster("hinweis","Version",pygame.Rect(10,50,200,170)))
 				aktivfenster[len(aktivfenster)-1].hinweistext = ["Amigang Workbench 3.1"]
