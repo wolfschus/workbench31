@@ -42,6 +42,7 @@ class appicon:
 		self.image = pygame.image.load(image)
 		self.image2 = pygame.image.load(image2)
 		self.clicked = False
+		self.dclicked = False
 		self.lastclick = time.time()
 
 		self.rect = pygame.Rect(0,0,0,0)
@@ -295,19 +296,23 @@ class fenster:
 		
 		return
 
-	def leftmouseclick(self, screen, mousepos, leftclickpos):
+	def leftmouseclick(self, screen, mousepos, leftclickpos, dclick):
 		if pygame.Rect(self.fensterrect).collidepoint(leftclickpos) or self.verschieben:
 			self.aktiv = True	
 		else:
 			self.aktiv = False
 
 		if self.aktiv:
-			for icon in self.icons:
+			for icon in self.icons:	
 				if pygame.Rect(self.fensterrect.x+icon.rect[0],self.fensterrect.y+icon.rect[1],icon.rect[2],icon.rect[3]).collidepoint(leftclickpos):
+					if dclick:
+						print(self.fenstername)
+						return("Befehl:"+ icon.befehl)
 					icon.clicked=True
 				else:
 					icon.clicked=False
 
+#			print(self.fenstername)
 
 			if pygame.Rect(self.fensterrect.x+self.fenstercloserect[0],self.fensterrect.y+self.fenstercloserect[1],self.fenstercloserect[2],self.fenstercloserect[3]).collidepoint(leftclickpos):
 				return("close")
@@ -356,10 +361,14 @@ class fenster:
 			return("aktiv")
 		return
 		
-	def leftmousedoppelclick(self, screen, mousepos, leftclickpos):
-		for icon in self.icons:
-			if pygame.Rect(self.fensterrect.x+icon.rect[0],self.fensterrect.y+icon.rect[1],icon.rect[2],icon.rect[3]).collidepoint(leftclickpos):
-				return(icon.befehl)
+#	def leftmousedoppelclick(self, screen, mousepos, leftclickpos):
+#		print(leftclickpos)
+#		if self.aktiv:
+#		print(self.fenstername)
+#		for icon in self.icons:
+#			print(self.fensterrect.x+icon.rect[0],self.fensterrect.y+icon.rect[1],icon.rect[2],icon.rect[3])
+#			if pygame.Rect(self.fensterrect.x+icon.rect[0],self.fensterrect.y+icon.rect[1],icon.rect[2],icon.rect[3]).collidepoint(leftclickpos):
+#				return(icon.befehl)
 					
 		
 	
@@ -399,7 +408,7 @@ def main():
 	menue.append(["Fenster", "menue", "", "", pygame.Rect(0,0,0,0), 0, 0, True])
 	menue.append(["Piktogramm", "menue", "", "", pygame.Rect(0,0,0,0), 0, 0, True])
 	menue.append(["Hilfsmittel", "menue", "", "", pygame.Rect(0,0,0,0), 0, 0, True])
-	menue.append(["  Workbench als Hintergrund", "submenue", "Workbench", "Workbench als Hintergrund", pygame.Rect(0,0,0,0), 0, 0, True])
+	menue.append(["Workbench als Hintergrund", "submenue", "Workbench", "Workbench als Hintergrund", pygame.Rect(0,0,0,0), 0, 0, True])
 	menue.append(["Befehl ausführen ...", "submenue", "Workbench", "Befehl ausführen", pygame.Rect(0,0,0,0), 0, 0, True])
 	menue.append(["Bild neu aufbauen", "submenue", "Workbench", "Bild neu aufbauen", pygame.Rect(0,0,0,0), 0, 0, True])
 	menue.append(["Alles aktualisieren", "submenue", "Workbench", "Alles aktualisieren", pygame.Rect(0,0,0,0), 0, 0, True])
@@ -482,7 +491,7 @@ def main():
 	aktivfenster.append(fenster("workbench","Workbench",pygame.Rect(0,21,width,height-20)))
 	aktivfenster[0].aktiv=True	
 	aktivfenster[0].workbenchmode = True
-	aktivfenster[0].icons.append(appicon("Ram Disk" ,"ramdisk", (40,30), "dir:ramdisk", "images/fd1.png", "images/fd2.png"))
+	aktivfenster[0].icons.append(appicon("Ram Disk" ,"ramdisk", (140,40), "dir:ramdisk", "images/fd1.png", "images/fd2.png"))
 	aktivfenster[0].icons.append(appicon("DH0" ,"hd", (20,100), "dir:dh0", "images/hd1.png", "images/hd2.png"))
 	aktivfenster[0].icons.append(appicon("DH1" ,"hd", (20,170), "dir:dh1", "images/hd1.png", "images/hd2.png"))
 	aktivfenster[0].icons.append(appicon("Shell" ,"cli", (30,240), "starte:Shell", "images/cli1.png", "images/cli2.png"))
@@ -618,14 +627,11 @@ def main():
 			for afenster in reversed(aktivfenster):
 				if isaktivclick:
 					if leftclick:
-						if leftdoppelclick:
-							befehl = afenster.leftmousedoppelclick(screen, mousepos, leftclickpos)
-							leftdoppelclick = False
-					
-						aktion = afenster.leftmouseclick(screen, mousepos, leftclickpos)
-#						print(aktion)
-						if aktion=="":
+						aktion = afenster.leftmouseclick(screen, mousepos, leftclickpos, leftdoppelclick)
+						if aktion=="" or aktion==None:
 							afenster.aktiv=False
+						elif(aktion[:7])=="Befehl:":
+							befehl=aktion[7:]
 						elif aktion == "close":
 							aktivfenster.remove(afenster)
 							aktivfenster[0].aktiv=True
@@ -800,11 +806,14 @@ def main():
 			elif befehl=="starte:Shell":
 				aktivfenster.append(fenster("shell","AmigaShell",pygame.Rect(4,120,width-32,280)))
 				aktivfenster[len(aktivfenster)-1].aktiv=True
-			elif befehl=="dir:/home/wolf/dh0":
+			elif befehl=="dir:dh0":
 				aktivfenster.append(fenster("file","DH0",pygame.Rect(4,120,width-32,280)))
 				aktivfenster[len(aktivfenster)-1].aktiv=True
-			elif befehl=="dir:/home/wolf/dh1":
+			elif befehl=="dir:dh1":
 				aktivfenster.append(fenster("file","DH1",pygame.Rect(4,120,width-32,280)))
+				aktivfenster[len(aktivfenster)-1].aktiv=True
+			elif befehl=="dir:ramdisk":
+				aktivfenster.append(fenster("file","Ramdisk",pygame.Rect(4,120,width-32,280)))
 				aktivfenster[len(aktivfenster)-1].aktiv=True
 			elif befehl=="Version Copyright":
 				aktivfenster.append(fenster("hinweis","Version",pygame.Rect(0,0,200,170)))
