@@ -35,7 +35,7 @@ font = pygame.font.Font("fonts/AmigaTopaz.ttf", 15)
 	
 class appicon:
 	def __init__(self, name, typ, pos, befehl, image, image2):
-		self.typ = typ		
+		self.typ = typ # 1 DISK, 2 DRAWER, 3 TOOL, 4 PROJECT, 5 GARBAGE, 6 DEVICE, 7 KICK	
 		self.name = name		
 		self.pos = pos 		
 		self.befehl = befehl
@@ -43,6 +43,7 @@ class appicon:
 		self.image2 = pygame.image.load(image2)
 		self.clicked = False
 		self.dclicked = False
+		self.move = False
 		self.lastclick = time.time()
 
 		self.rect = pygame.Rect(0,0,0,0)
@@ -62,8 +63,11 @@ class appicon:
 			pygame.draw.line(icon, (255,255,255), [0, 0], [icon.get_width()-1,0], 2)
 			pygame.draw.line(icon, (255,255,255), [0, 0], [0,icon.get_height()-1], 1)
 			icon.blit(self.image,(5,3))
+		if self.move:
+			pygame.draw.rect(surface, (255,0,0), (self.pos[0]-2,self.pos[1]-2,icon.get_width()+4,icon.get_height()+4), 2)                        
 		
 		self.rect = surface.blit(icon, self.pos)
+
 		text = font.render(self.name, True, (0, 0, 0))
 		surface.blit(text, (self.pos[0]+icon.get_width()/2-text.get_width()/2,self.pos[1]+icon.get_height()+3))
 		
@@ -296,6 +300,12 @@ class fenster:
 		
 		return
 
+	def leftmouseclickup(self, screen, mousepos, leftclickpos, dclick):
+		print("Up")
+#		if self.aktiv:
+#			for icon in self.icons:	
+#				icon.clicked=False
+
 	def leftmouseclick(self, screen, mousepos, leftclickpos, dclick):
 		if pygame.Rect(self.fensterrect).collidepoint(leftclickpos) or self.verschieben:
 			self.aktiv = True	
@@ -309,6 +319,7 @@ class fenster:
 						print(self.fenstername)
 						return("Befehl:"+ icon.befehl)
 					icon.clicked=True
+					icon.move=True
 				else:
 					icon.clicked=False
 
@@ -491,10 +502,10 @@ def main():
 	aktivfenster.append(fenster("workbench","Workbench",pygame.Rect(0,21,width,height-20)))
 	aktivfenster[0].aktiv=True	
 	aktivfenster[0].workbenchmode = True
-	aktivfenster[0].icons.append(appicon("Ram Disk" ,"ramdisk", (140,80), "dir:ramdisk", "images/fd1.png", "images/fd2.png"))
-	aktivfenster[0].icons.append(appicon("DH0" ,"hd", (20,100), "dir:dh0", "images/hd1.png", "images/hd2.png"))
-	aktivfenster[0].icons.append(appicon("DH1" ,"hd", (20,170), "dir:dh1", "images/hd1.png", "images/hd2.png"))
-	aktivfenster[0].icons.append(appicon("Shell" ,"cli", (30,240), "starte:Shell", "images/cli1.png", "images/cli2.png"))
+	aktivfenster[0].icons.append(appicon("Ram Disk" ,1, (140,80), "dir:ramdisk", "images/fd1.png", "images/fd2.png"))
+	aktivfenster[0].icons.append(appicon("DH0" ,1, (20,100), "dir:dh0", "images/hd1.png", "images/hd2.png"))
+	aktivfenster[0].icons.append(appicon("DH1" ,1, (20,170), "dir:dh1", "images/hd1.png", "images/hd2.png"))
+	aktivfenster[0].icons.append(appicon("Shell" ,2, (30,240), "starte:Shell", "images/cli1.png", "images/cli2.png"))
 		
 	running = True
 	while running:
@@ -662,9 +673,6 @@ def main():
 								a2fenster.aktiv=False
 							afenster.aktiv=True
 					
-#						else:
-#							isaktivclick=False
-							
 																	
 					else:
 						if afenster.verschieben:					
